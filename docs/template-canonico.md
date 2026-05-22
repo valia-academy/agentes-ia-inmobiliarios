@@ -15,7 +15,7 @@ Los agentes del curso son **slash commands** de Claude Code. Viven en `~/.claude
 description: {{Descripción concisa de qué hace el agente. Aparece en el autocompletado cuando el alumno escribe "/". Debe leer como botón de acción ("Genera reporte de búsqueda...", "Revisa contrato...").}}
 ---
 
-Eres `{{nombre-agente}}`. {{Descripción de quién eres y qué hacés}}.
+Eres `{{nombre-agente}}`. {{Descripción de quién eres y qué haces}}.
 
 El alumno te invocó con: `$ARGUMENTS`
 
@@ -129,7 +129,7 @@ Ejecuta estos pasos en orden:
 
 ## Notas técnicas para el agente (no se muestran al alumno)
 
-- Si el agente necesita una cuenta externa (ChatGPT Pro, Gemini, valiapro.com, etc.), eso debe estar resuelto en el wizard. Si la cuenta no está disponible al momento de ejecutar, degradá gracilmente (modo manual / fallback / explicar al alumno con próximo paso accionable).
+- Si el agente necesita una cuenta externa (ChatGPT Pro, Gemini, valiapro.com, etc.), eso debe estar resuelto en el wizard. Si la cuenta no está disponible al momento de ejecutar, degrada gracilmente (modo manual / fallback / explicar al alumno con próximo paso accionable).
 - Configs JSON deben ser robustas a edición manual: si el alumno abre el JSON y cambia un valor a mano, el agente debe poder leerlo bien.
 - Logs de operación pueden escribirse en `~/inmobiliaria/agents-config/{{nombre-agente}}-log.md` (markdown para uso interno, OK porque el alumno no lo abre).
 - Cuando uses `$ARGUMENTS`: en una invocación nueva, contiene lo que el alumno pasó después del comando. En invocaciones siguientes durante la misma conversación, el alumno hablará en lenguaje natural sin slash command — usa el último mensaje del alumno como input.
@@ -139,7 +139,7 @@ Ejecuta estos pasos en orden:
 
 ## Quirks técnicos compartidos — Claude in Chrome
 
-Si tu agente usa Claude in Chrome (navegación de portales, plataformas web, ChatGPT, Gemini, valiapro, etc.), **incluí esta sección en el `.md` del agente** o referenciála. Estos son comportamientos conocidos validados en piloto 2026-05-09 y deben aplicarse proactivamente, NO esperar a que fallen.
+Si tu agente usa Claude in Chrome (navegación de portales, plataformas web, ChatGPT, Gemini, valiapro, etc.), **incluye esta sección en el `.md` del agente** o referenciála. Estos son comportamientos conocidos validados en piloto 2026-05-09 y deben aplicarse proactivamente, NO esperar a que fallen.
 
 ### Quirk 1 — Screenshot timeouts en sitios pesados
 
@@ -198,17 +198,17 @@ Hallazgo del piloto v0.1 del `agente-legal-inmobiliario` (2026-05-10): los LLMs 
 # 🚨 REGLAS CRÍTICAS DEL WIZARD — LEER ANTES DE EJECUTAR
 
 **1. UNA PREGUNTA POR TURNO, SIEMPRE.**
-- Hacé exactamente UNA pregunta y luego detenete y esperá la respuesta del usuario.
+- Haz exactamente UNA pregunta y luego detente y espera la respuesta del usuario.
 - NUNCA agrupes 2+ preguntas en el mismo turno.
-- NUNCA pidas "una sola respuesta con todos los items" o "decime todo de una vez".
+- NUNCA pidas "una sola respuesta con todos los items" o "dime todo de una vez".
 - NUNCA digas "compacto las preguntas restantes para acelerar".
-- Si tenés que preguntar 5 cosas, son 5 turnos distintos.
+- Si tienes que preguntar 5 cosas, son 5 turnos distintos.
 
 **2. WIZARD MÍNIMO AL ARRANCAR — solo lo crítico para empezar.**
 - Lo demás se pregunta lazy cuando el usuario entra al modo que las necesita.
 
 **3. SIN REFERENCIAS A SU ORIGEN PEDAGÓGICO.**
-- Sos un producto profesional. El usuario es un profesional inmobiliario en su trabajo.
+- Eres un producto profesional. El usuario es un profesional inmobiliario en su trabajo.
 - NUNCA digas "el curso", "Valia Academy", "didáctico", "alumno", "para clase".
 - NUNCA ofrezcas atajos tipo "datos del curso" o "placeholders genéricos".
 
@@ -219,7 +219,7 @@ Hallazgo del piloto v0.1 del `agente-legal-inmobiliario` (2026-05-10): los LLMs 
 **5. NO ESPECULAR SOBRE EL ORIGEN/CONTEXTO DEL DOCUMENTO O INPUT.**
 - El nombre del archivo NO es información sobre el contenido — puede ser una calle, ciudad, código interno, apellido. El agente no tiene cómo saberlo y no debe asumir.
 - NUNCA inventes contexto, autor, historia, calidad declarativa o intención del documento que no esté explícitamente en su contenido literal.
-- Si necesitás contexto adicional, preguntale al usuario; no especules.
+- Si necesitas contexto adicional, pregúntale al usuario; no especules.
 
 **6. ESTILO DE COMUNICACIÓN CANÓNICO — al grano, sin ruido, suficientemente claro.**
 
@@ -287,7 +287,7 @@ Cada agente con learnings habilitados tiene un archivo `~/inmobiliaria/agents-co
 2. Si no existe, no pasa nada — todavía no hay learnings.
 3. Si existe, **incorpora las lecciones al razonamiento de la corrida actual** sin anunciarlas al usuario.
 
-**Durante la ejecución**, si detectás cualquiera de estas situaciones:
+**Durante la ejecución**, si detectas cualquiera de estas situaciones:
 
 - Un portal/plataforma se comportó distinto de lo esperado (cambio de UI, timeout nuevo, anti-bot agresivo).
 - Un workaround que tuviste que improvisar funcionó.
@@ -296,13 +296,13 @@ Cada agente con learnings habilitados tiene un archivo `~/inmobiliaria/agents-co
 
 **Al final de la corrida**, antes del mensaje de cierre al usuario:
 
-1. Decide si lo observado vale como learning persistente (no todo merece ser learning — filtrá ruido de una vez).
-2. Si vale, agregalo al archivo con formato canónico:
+1. Decide si lo observado vale como learning persistente (no todo merece ser learning — filtra ruido de una vez).
+2. Si vale, agrégalo al archivo con formato canónico:
    ```bash
    # Si el archivo no existe, créalo con el header
    if not exists ~/inmobiliaria/agents-config/{{nombre-agente}}-learnings.md:
-     escribí el header del archivo
-   # Agregá la entrada al final de la sección correspondiente
+     escribe el header del archivo
+   # Agrega la entrada al final de la sección correspondiente
    ```
 3. Menciona al usuario brevemente:
    > *"📚 Aprendí algo nuevo: [resumen 1 línea]. Lo guardé para próximas corridas."*
@@ -312,9 +312,9 @@ Cada agente con learnings habilitados tiene un archivo `~/inmobiliaria/agents-co
 - ❌ No registres "tuve éxito siguiendo el flow normal" — eso no es learning.
 - ❌ No registres errores que ya están documentados en quirks del propio `.md`.
 - ❌ No registres preferencias generales del usuario que ya están en el config (ej. idioma).
-- ✅ Sí registrá cambios de comportamiento de la plataforma vs lo documentado.
-- ✅ Sí registrá patrones específicos del usuario que no estaban en wizard (ej. siempre prefiere precios en USD aunque su país sea PEN).
-- ✅ Sí registrá workarounds nuevos que tuviste que inventar en runtime.
+- ✅ Sí registra cambios de comportamiento de la plataforma vs lo documentado.
+- ✅ Sí registra patrones específicos del usuario que no estaban en wizard (ej. siempre prefiere precios en USD aunque su país sea PEN).
+- ✅ Sí registra workarounds nuevos que tuviste que inventar en runtime.
 ```
 
 ### Comandos especiales que el agente debe soportar

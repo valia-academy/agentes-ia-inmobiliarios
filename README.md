@@ -10,12 +10,12 @@
 
 ## 🚀 Instalación en 1 minuto
 
-Si tenés **Claude Pro + Claude Desktop + Chrome con extensión Claude in Chrome**, pegale esta frase exacta a Claude Desktop y listo:
+Si tienes **Claude Pro + Claude Desktop + Chrome con extensión Claude in Chrome**, copia esta frase exacta y pégala en Claude Desktop:
 
 ```
-Claude, instalá los agentes IA inmobiliarios del repo público
+Claude, instala los agentes IA inmobiliarios del repo público
 https://github.com/valia-academy/agentes-ia-inmobiliarios.
-Los archivos .md están en /commands/. Copialos a mi
+Los archivos .md están en /commands/. Cópialos a mi
 ~/.claude/commands/ para que aparezcan como slash commands.
 ```
 
@@ -24,14 +24,14 @@ Claude hace el resto:
 2. Los guarda en `~/.claude/commands/`.
 3. Te confirma que están listos.
 
-Después escribí `/` en cualquier conversación de Claude Desktop y vas a ver los agentes disponibles en autocompletado.
+Después escribe `/` en cualquier conversación de Claude Desktop y vas a ver los agentes disponibles en autocompletado.
 
 ### Actualizar a la última versión
 
 Cuando publiquemos cambios al repo:
 
 ```
-Claude, actualizame los agentes IA inmobiliarios desde
+Claude, actualízame los agentes IA inmobiliarios desde
 https://github.com/valia-academy/agentes-ia-inmobiliarios
 ```
 
@@ -94,7 +94,7 @@ Brokers individuales, agentes en inmobiliaria, dueños de inmobiliarias medianas
 
 ## 💡 ¿Cómo se usan?
 
-Una vez instalados, en cualquier conversación de Claude Desktop escribís el comando seguido del pedido en lenguaje natural:
+Una vez instalados, en cualquier conversación de Claude Desktop escribes el comando seguido del pedido en lenguaje natural:
 
 ```
 /agente-reporte-de-busqueda Cliente busca depa 3 dorm en Miraflores
@@ -102,7 +102,7 @@ o San Isidro, USD 250-300k, con cochera. Tiene mascota.
 ```
 
 ```
-/agente-legal-inmobiliario Revisá ~/Downloads/contrato.pdf
+/agente-legal-inmobiliario Revisa ~/Downloads/contrato.pdf
 ```
 
 ```
@@ -111,7 +111,7 @@ o San Isidro, USD 250-300k, con cochera. Tiene mascota.
 ```
 
 ```
-/agente-fotos-inmuebles Procesá fotos en ~/Downloads/larco-850/
+/agente-fotos-inmuebles Procesa fotos en ~/Downloads/larco-850/
 ```
 
 ```
@@ -129,7 +129,7 @@ mensajes de seguimiento post-visita.
 
 ```
 agentes-ia-inmobiliarios/
-├── README.md                    ← estás acá
+├── README.md                    ← estás aquí
 ├── LICENSE                      ← CC BY-NC 4.0
 ├── commands/                    ← los 6 agentes (.md de slash commands)
 │   ├── agente-hola-inmobiliaria.md
@@ -140,7 +140,7 @@ agentes-ia-inmobiliarios/
 │   └── agente-constructor-de-agentes.md
 ├── docs/
 │   ├── template-canonico.md     ← anatomía estándar del slash command self-installing
-│   └── ideas-sugeridas-agentes.md ← 30+ ideas de agentes que podés construir con el meta-agente
+│   └── ideas-sugeridas-agentes.md ← 30+ ideas de agentes que puedes construir con el meta-agente
 ├── ejemplos/                    ← outputs de muestra (próximamente)
 └── plantillas-legales/          ← plantillas de contratos por país (próximamente)
 ```
@@ -174,9 +174,9 @@ El `agente-constructor-de-agentes` puede crearte agentes nuevos a partir de una 
 
 ---
 
-## 🏫 ¿Querés aprender a construir estos agentes desde cero?
+## 🏫 ¿Quieres aprender a construir estos agentes desde cero?
 
-Estos agentes son entregables del curso **Agentes IA Inmobiliarios** de [Valia Academy](https://github.com/valia-academy) — una clase de 2.5 horas en vivo donde aprendés a construir agentes IA para inmobiliarias sin saber programar.
+Estos agentes son entregables del curso **Agentes IA Inmobiliarios** de [Valia Academy](https://github.com/valia-academy) — una clase de 2.5 horas en vivo donde aprendes a construir agentes IA para inmobiliarias sin saber programar.
 
 Más información: pronto.
 
