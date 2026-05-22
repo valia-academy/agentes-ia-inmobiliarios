@@ -2,7 +2,7 @@
 
 > **6 agentes IA self-installing para profesionales inmobiliarios** en LATAM y España.
 > Reporte de búsqueda con anti-salto · Análisis legal de contratos · Valuación ACM · Procesamiento de fotos con IA · Meta-agente que construye más agentes.
-> Open source — uso individual gratuito. Hecho por [Valia Academy](https://github.com/carlosdelcarpiovalia).
+> Open source — uso individual gratuito. Hecho por [Valia Academy](https://github.com/valia-academy).
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 
@@ -14,7 +14,7 @@ Si tenés **Claude Pro + Claude Desktop + Chrome con extensión Claude in Chrome
 
 ```
 Claude, instalá los agentes IA inmobiliarios del repo público
-https://github.com/carlosdelcarpiovalia/agentes-ia-inmobiliarios.
+https://github.com/valia-academy/agentes-ia-inmobiliarios.
 Los archivos .md están en /commands/. Copialos a mi
 ~/.claude/commands/ para que aparezcan como slash commands.
 ```
@@ -32,7 +32,7 @@ Cuando publiquemos cambios al repo:
 
 ```
 Claude, actualizame los agentes IA inmobiliarios desde
-https://github.com/carlosdelcarpiovalia/agentes-ia-inmobiliarios
+https://github.com/valia-academy/agentes-ia-inmobiliarios
 ```
 
 Claude re-descarga los `.md`. Tus configs locales (datos profesional, learnings) **se conservan** — están en otra carpeta (`~/inmobiliaria/agents-config/`).
@@ -40,7 +40,7 @@ Claude re-descarga los `.md`. Tus configs locales (datos profesional, learnings)
 ### Instalación manual (alternativa para técnicos)
 
 ```bash
-git clone https://github.com/carlosdelcarpiovalia/agentes-ia-inmobiliarios.git
+git clone https://github.com/valia-academy/agentes-ia-inmobiliarios.git
 cd agentes-ia-inmobiliarios
 cp commands/*.md ~/.claude/commands/
 ```
@@ -48,7 +48,7 @@ cp commands/*.md ~/.claude/commands/
 En Windows PowerShell:
 
 ```powershell
-git clone https://github.com/carlosdelcarpiovalia/agentes-ia-inmobiliarios.git
+git clone https://github.com/valia-academy/agentes-ia-inmobiliarios.git
 cd agentes-ia-inmobiliarios
 Copy-Item commands\*.md $HOME\.claude\commands\
 ```
@@ -176,7 +176,7 @@ El `agente-constructor-de-agentes` puede crearte agentes nuevos a partir de una 
 
 ## 🏫 ¿Querés aprender a construir estos agentes desde cero?
 
-Estos agentes son entregables del curso **Agentes IA Inmobiliarios** de [Valia Academy](https://github.com/carlosdelcarpiovalia) — una clase de 2.5 horas en vivo donde aprendés a construir agentes IA para inmobiliarias sin saber programar.
+Estos agentes son entregables del curso **Agentes IA Inmobiliarios** de [Valia Academy](https://github.com/valia-academy) — una clase de 2.5 horas en vivo donde aprendés a construir agentes IA para inmobiliarias sin saber programar.
 
 Más información: pronto.
 
@@ -184,7 +184,7 @@ Más información: pronto.
 
 ## 🤝 Comunidad y soporte
 
-- **Issues y bugs:** [GitHub Issues](https://github.com/carlosdelcarpiovalia/agentes-ia-inmobiliarios/issues)
+- **Issues y bugs:** [GitHub Issues](https://github.com/valia-academy/agentes-ia-inmobiliarios/issues)
 - **Comunidad de alumnos:** Skool (link próximamente, exclusivo para alumnos del curso)
 
 ---
@@ -208,5 +208,5 @@ Para licencia comercial (uso en empresas inmobiliarias, integración en SaaS, re
 ---
 
 <p align="center">
-<sub>Hecho con ❤️ por <a href="https://github.com/carlosdelcarpiovalia">Valia Academy</a> · Lima, Perú</sub>
+<sub>Hecho con ❤️ por <a href="https://github.com/valia-academy">Valia Academy</a> · Lima, Perú</sub>
 </p>
