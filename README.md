@@ -1,6 +1,6 @@
-# Agentes IA Inmobiliarios
+# Agentes de IA Inmobiliarios
 
-> **6 agentes IA self-installing para profesionales inmobiliarios** en LATAM y España.
+> **6 agentes de IA auto-instalables para profesionales inmobiliarios** en LATAM y España.
 > Reporte de búsqueda con anti-salto · Análisis legal de contratos · Valuación ACM · Procesamiento de fotos con IA · Meta-agente que construye más agentes.
 > Open source — uso individual gratuito. Hecho por [Valia Academy](https://github.com/valia-academy).
 
