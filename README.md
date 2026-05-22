@@ -1,0 +1,212 @@
+# Agentes IA Inmobiliarios
+
+> **6 agentes IA self-installing para profesionales inmobiliarios** en LATAM y España.
+> Reporte de búsqueda con anti-salto · Análisis legal de contratos · Valuación ACM · Procesamiento de fotos con IA · Meta-agente que construye más agentes.
+> Open source — uso individual gratuito. Hecho por [Valia Academy](https://github.com/carlosdelcarpiovalia).
+
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+
+---
+
+## 🚀 Instalación en 1 minuto
+
+Si tenés **Claude Pro + Claude Desktop + Chrome con extensión Claude in Chrome**, pegale esta frase exacta a Claude Desktop y listo:
+
+```
+Claude, instalá los agentes IA inmobiliarios del repo público
+https://github.com/carlosdelcarpiovalia/agentes-ia-inmobiliarios.
+Los archivos .md están en /commands/. Copialos a mi
+~/.claude/commands/ para que aparezcan como slash commands.
+```
+
+Claude hace el resto:
+1. Descarga los 6 archivos `.md` del repo.
+2. Los guarda en `~/.claude/commands/`.
+3. Te confirma que están listos.
+
+Después escribí `/` en cualquier conversación de Claude Desktop y vas a ver los agentes disponibles en autocompletado.
+
+### Actualizar a la última versión
+
+Cuando publiquemos cambios al repo:
+
+```
+Claude, actualizame los agentes IA inmobiliarios desde
+https://github.com/carlosdelcarpiovalia/agentes-ia-inmobiliarios
+```
+
+Claude re-descarga los `.md`. Tus configs locales (datos profesional, learnings) **se conservan** — están en otra carpeta (`~/inmobiliaria/agents-config/`).
+
+### Instalación manual (alternativa para técnicos)
+
+```bash
+git clone https://github.com/carlosdelcarpiovalia/agentes-ia-inmobiliarios.git
+cd agentes-ia-inmobiliarios
+cp commands/*.md ~/.claude/commands/
+```
+
+En Windows PowerShell:
+
+```powershell
+git clone https://github.com/carlosdelcarpiovalia/agentes-ia-inmobiliarios.git
+cd agentes-ia-inmobiliarios
+Copy-Item commands\*.md $HOME\.claude\commands\
+```
+
+---
+
+## 🧑‍💼 Audiencia objetivo
+
+Brokers individuales, agentes en inmobiliaria, dueños de inmobiliarias medianas, y consultores que quieran ofrecer estos servicios a sus clientes. Pensados para:
+
+- 🇵🇪 Perú · 🇦🇷 Argentina · 🇲🇽 México · 🇨🇴 Colombia · 🇨🇱 Chile · 🇺🇾 Uruguay · 🇪🇨 Ecuador · 🇵🇦 Panamá · 🇧🇷 Brasil · 🇪🇸 España
+
+---
+
+## 🤖 Los 6 agentes
+
+| Comando | Qué hace | Etapa del funnel |
+|---------|----------|------------------|
+| `/agente-hola-inmobiliaria` | Smoke-test simple — saludo + frase motivacional. Sirve para verificar que la instalación funciona. | — |
+| `/agente-reporte-de-busqueda` | De unas líneas con criterios del cliente comprador, genera Word brandeado con la selección de inmuebles que matchean + Excel checklist anti-salto. Navega portales del país con tu sesión de Chrome. | Pre-venta / captación |
+| `/agente-legal-inmobiliario` | Redacta, analiza y consulta sobre contratos inmobiliarios en tu jurisdicción. 3 modos auto-detectados (redactor / analista / consultor). Multimodal (PDF, Word, MD, TXT, imágenes). Auto-genera knowledge legal país-específico. | Cierre |
+| `/agente-valuacion` | De ficha del inmueble + URLs de comparables, genera Word brandeado con valuación (ACM) + Excel ajustable con fórmulas reales. | Valuación |
+| `/agente-fotos-inmuebles` | Procesa carpeta caótica de fotos: selecciona finalistas, renombra según estándar inmobiliario, mejora con GPT Image 2 (ChatGPT Plus/Pro). | Operación / listing |
+| `/agente-constructor-de-agentes` | **Meta-agente.** De una idea (vaga o concreta) sobre qué automatizar, te conduce conversacionalmente por el diseño y te deja un nuevo agente instalado y listo. | Multiplicador transversal |
+
+---
+
+## ⚙️ Pre-requisitos
+
+| Pre-requisito | Por qué | Costo | Link |
+|---------------|---------|-------|------|
+| **Cuenta Claude Pro** | Motor de los agentes | ~USD 20/mes | [claude.ai/upgrade](https://claude.ai/upgrade) |
+| **Claude Desktop** | Donde se ejecutan los slash commands | Incluido en Pro | [claude.com/claude-code](https://claude.com/claude-code) |
+| **Chrome + extensión Claude in Chrome** | Para que los agentes naveguen portales y servicios web con tu sesión | Incluido en Pro | [Chrome Web Store](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) |
+
+**Pre-requisitos opcionales** según uso:
+
+| Para qué agente | Cuenta requerida | Modo sin la cuenta |
+|-----------------|------------------|--------------------|
+| `/agente-fotos-inmuebles` con mejora IA | ChatGPT Plus o Pro (GPT Image 2) | Fallback automático a Pillow local (correcciones básicas) |
+
+---
+
+## 💡 ¿Cómo se usan?
+
+Una vez instalados, en cualquier conversación de Claude Desktop escribís el comando seguido del pedido en lenguaje natural:
+
+```
+/agente-reporte-de-busqueda Cliente busca depa 3 dorm en Miraflores
+o San Isidro, USD 250-300k, con cochera. Tiene mascota.
+```
+
+```
+/agente-legal-inmobiliario Revisá ~/Downloads/contrato.pdf
+```
+
+```
+/agente-valuacion Av. Larco 850, Miraflores. Depa 120m², 18 años,
+3 dorm, USD. Vista al parque. Comparables: [url1], [url2], [url3]
+```
+
+```
+/agente-fotos-inmuebles Procesá fotos en ~/Downloads/larco-850/
+```
+
+```
+/agente-constructor-de-agentes Quiero crear un agente para automatizar
+mensajes de seguimiento post-visita.
+```
+
+**Primera vez:** cada agente hace un wizard corto (1-5 preguntas atómicas) para configurarse con tus datos. Después va directo a la tarea cada vez.
+
+**Outputs:** se guardan en `~/inmobiliaria/outputs/{tipo}/`. Word, Excel y PDF — nunca markdown como entregable.
+
+---
+
+## 📂 Estructura del repo
+
+```
+agentes-ia-inmobiliarios/
+├── README.md                    ← estás acá
+├── LICENSE                      ← CC BY-NC 4.0
+├── commands/                    ← los 6 agentes (.md de slash commands)
+│   ├── agente-hola-inmobiliaria.md
+│   ├── agente-reporte-de-busqueda.md
+│   ├── agente-legal-inmobiliario.md
+│   ├── agente-valuacion.md
+│   ├── agente-fotos-inmuebles.md
+│   └── agente-constructor-de-agentes.md
+├── docs/
+│   ├── template-canonico.md     ← anatomía estándar del slash command self-installing
+│   └── ideas-sugeridas-agentes.md ← 30+ ideas de agentes que podés construir con el meta-agente
+├── ejemplos/                    ← outputs de muestra (próximamente)
+└── plantillas-legales/          ← plantillas de contratos por país (próximamente)
+```
+
+---
+
+## 🧠 Cómo están diseñados
+
+Cada agente sigue un **patrón canónico** validado:
+
+1. **Self-installing wizard** — primera invocación hace 1-5 preguntas atómicas, guarda config en `~/inmobiliaria/agents-config/{nombre}.json`.
+2. **6 reglas críticas** al inicio del `.md` que prohíben anti-patterns comunes del LLM (agrupar preguntas, frases pomposas, insights educativos espontáneos, especular sobre origen de documentos).
+3. **Memoria evolutiva (learnings)** — los agentes aprenden con uso y guardan quirks/preferencias en `{nombre}-learnings.md` para mejorar entre corridas.
+4. **Outputs en Word/Excel/PDF** — nunca markdown como entregable al usuario.
+5. **Comandos universales:** `reconfigurar` / `ver config` / `ayuda` / `ver learnings` / `olvidar learnings`.
+
+Detalle completo en [`docs/template-canonico.md`](docs/template-canonico.md).
+
+---
+
+## 🛠️ Construye tus propios agentes
+
+El `agente-constructor-de-agentes` puede crearte agentes nuevos a partir de una idea. Ver [`docs/ideas-sugeridas-agentes.md`](docs/ideas-sugeridas-agentes.md) para 30+ ideas categorizadas:
+
+- **Comunicación con clientes** (mensaje de bienvenida, seguimiento post-visita, respuestas a objeciones)
+- **Operación interna** (ficha de cliente, planning semanal, checklist pre-visita)
+- **Marketing** (post Instagram/Facebook, caption Reels, auditoría de tu listing)
+- **Análisis y reportes** (reporte mensual a propietario, comparativos, análisis de barrio)
+- **Captación** (investigador de prospecto, análisis crítico de listing ajeno)
+- **Cierre y negociación** (carta-oferta formal, análisis de contrapropuesta)
+
+---
+
+## 🏫 ¿Querés aprender a construir estos agentes desde cero?
+
+Estos agentes son entregables del curso **Agentes IA Inmobiliarios** de [Valia Academy](https://github.com/carlosdelcarpiovalia) — una clase de 2.5 horas en vivo donde aprendés a construir agentes IA para inmobiliarias sin saber programar.
+
+Más información: pronto.
+
+---
+
+## 🤝 Comunidad y soporte
+
+- **Issues y bugs:** [GitHub Issues](https://github.com/carlosdelcarpiovalia/agentes-ia-inmobiliarios/issues)
+- **Comunidad de alumnos:** Skool (link próximamente, exclusivo para alumnos del curso)
+
+---
+
+## 📜 Licencia
+
+**CC BY-NC 4.0** — Uso individual gratuito. Atribución requerida. Uso comercial requiere autorización explícita de Valia Academy.
+
+Ver [LICENSE](LICENSE) para el texto completo.
+
+Para licencia comercial (uso en empresas inmobiliarias, integración en SaaS, redistribución pagada): contacto@valiapro.com
+
+---
+
+## 🔄 Versión
+
+**v0.5** · Diseño curricular cerrado · 6 agentes en versión beta.
+
+Última actualización: 2026-05-22.
+
+---
+
+<p align="center">
+<sub>Hecho con ❤️ por <a href="https://github.com/carlosdelcarpiovalia">Valia Academy</a> · Lima, Perú</sub>
+</p>
