@@ -21,12 +21,19 @@ Claude, instala los agentes IA inmobiliarios del repo público
 https://github.com/valia-academy/agentes-ia-inmobiliarios.
 Los archivos .md están en /commands/. Cópialos a mi
 ~/.claude/commands/ para que aparezcan como slash commands.
+
+IMPORTANTE: NO uses git clone — no tengo git instalado y no quiero
+instalarlo. Descarga los archivos directamente vía HTTP usando las URLs
+raw de GitHub (raw.githubusercontent.com). En Windows usa
+Invoke-WebRequest; en Mac usa curl. Ambos vienen preinstalados.
 ```
 
 Claude hace el resto:
-1. Descarga los 6 archivos `.md` del repo.
+1. Descarga los 6 archivos `.md` del repo vía HTTP directo (sin git).
 2. Los guarda en `~/.claude/commands/`.
 3. Te confirma que están listos.
+
+> **Si te pide instalar git**: respondé *"No quiero instalar git. Descarga los archivos directamente con Invoke-WebRequest (Windows) o curl (Mac)."* — Claude obedece y usa HTTP nativo.
 
 Después escribe `/` en cualquier conversación de Claude Desktop y vas a ver los agentes disponibles en autocompletado.
 
@@ -36,25 +43,48 @@ Cuando publiquemos cambios al repo:
 
 ```
 Claude, actualízame los agentes IA inmobiliarios desde
-https://github.com/valia-academy/agentes-ia-inmobiliarios
+https://github.com/valia-academy/agentes-ia-inmobiliarios.
+NO uses git — descarga los archivos directamente vía HTTP
+(raw.githubusercontent.com) con Invoke-WebRequest o curl.
 ```
 
 Claude re-descarga los `.md`. Tus configs locales (datos profesional, learnings) **se conservan** — están en otra carpeta (`~/inmobiliaria/agents-config/`).
 
-### Instalación manual (alternativa para técnicos)
+### Instalación manual (alternativa sin Claude)
+
+Las opciones que siguen NO requieren git y usan herramientas que ya vienen preinstaladas en tu sistema.
+
+**Mac / Linux (con `curl`, viene preinstalado):**
+
+```bash
+mkdir -p ~/.claude/commands
+BASE="https://raw.githubusercontent.com/valia-academy/agentes-ia-inmobiliarios/main/commands"
+for f in agente-hola-inmobiliaria.md agente-reporte-de-busqueda.md \
+         agente-legal-inmobiliario.md agente-valuacion.md \
+         agente-fotos-inmuebles.md agente-constructor-de-agentes.md; do
+  curl -fsSL "$BASE/$f" -o ~/.claude/commands/"$f"
+done
+```
+
+**Windows PowerShell (con `Invoke-WebRequest`, viene preinstalado):**
+
+```powershell
+$dest = "$HOME\.claude\commands"
+New-Item -ItemType Directory -Force -Path $dest | Out-Null
+$base = "https://raw.githubusercontent.com/valia-academy/agentes-ia-inmobiliarios/main/commands"
+$files = @("agente-hola-inmobiliaria.md", "agente-reporte-de-busqueda.md",
+           "agente-legal-inmobiliario.md", "agente-valuacion.md",
+           "agente-fotos-inmuebles.md", "agente-constructor-de-agentes.md")
+foreach ($f in $files) {
+  Invoke-WebRequest -Uri "$base/$f" -OutFile "$dest\$f" -UseBasicParsing
+}
+```
+
+**Si tenés `git` instalado** (solo si ya lo usás para otras cosas):
 
 ```bash
 git clone https://github.com/valia-academy/agentes-ia-inmobiliarios.git
-cd agentes-ia-inmobiliarios
-cp commands/*.md ~/.claude/commands/
-```
-
-En Windows PowerShell:
-
-```powershell
-git clone https://github.com/valia-academy/agentes-ia-inmobiliarios.git
-cd agentes-ia-inmobiliarios
-Copy-Item commands\*.md $HOME\.claude\commands\
+cp agentes-ia-inmobiliarios/commands/*.md ~/.claude/commands/
 ```
 
 ---
