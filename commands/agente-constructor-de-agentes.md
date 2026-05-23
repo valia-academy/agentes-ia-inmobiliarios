@@ -173,7 +173,7 @@ Lee la idea del usuario (`$ARGUMENTS` o último mensaje) y clasifica como uno de
 ### Modo EXPRESS (idea muy aterrizada)
 
 **Triggers:** menciona inputs, outputs, pasos. Ejemplos:
-- *"Agente que recibe folder con fotos+docs de un inmueble, llena plantilla, devuelve Word+PDF brandeado"*
+- *"Agente que reciba una carpeta con fotos del inmueble + Word con sus características, y genere una ficha brandeada en Word lista para revisar y editar: texto y presentación primero, fotos al final"*
 - *"Agente que recibe nombre+inmueble+reacción de cliente, devuelve 3 versiones de mensaje WhatsApp para follow-up"*
 
 → Procede al flujo EXPRESS (2 fases): build directo + test opcional.
@@ -472,7 +472,7 @@ Si el pedido del usuario requiere infraestructura que **excede el patrón slash 
 
 - *"Quiero un agente que me genere mensajes de seguimiento post-visita"* → modo Guiado.
 - *"Necesito automatizar el armado de fichas de cliente nuevo"* → modo Guiado.
-- *"Agente que reciba carpeta con fotos+docs de un inmueble y arme Word+PDF brandeado"* → modo Express.
+- *"Agente que reciba carpeta con fotos del inmueble + Word con características, y genere ficha brandeada en Word: texto y presentación primero, fotos al final, lista para editar"* → modo Express.
 - *"Algo para mi negocio inmobiliario, no sé qué"* → modo Full.
 - *"Un agente que me ahorre tiempo en tareas repetitivas"* → modo Full (vago).
 

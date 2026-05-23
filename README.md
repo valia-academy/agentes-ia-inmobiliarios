@@ -119,8 +119,10 @@ o San Isidro, USD 250-300k, con cochera. Tiene mascota.
 ```
 
 ```
-/agente-constructor-de-agentes Quiero crear un agente para automatizar
-mensajes de seguimiento post-visita.
+/agente-constructor-de-agentes Quiero un agente que reciba una carpeta
+con fotos del inmueble + un Word con sus características, y genere una
+ficha brandeada en Word lista para revisar y editar: texto y presentación
+primero, fotos al final.
 ```
 
 **Primera vez:** cada agente hace un wizard corto (1-5 preguntas atómicas) para configurarse con tus datos. Después va directo a la tarea cada vez.

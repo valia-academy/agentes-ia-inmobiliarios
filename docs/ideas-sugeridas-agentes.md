@@ -22,7 +22,7 @@ Esta es una lista de **30+ agentes** que puedes construir con `agente-constructo
 | Idea | Input típico | Output típico |
 |------|--------------|---------------|
 | **Ficha de cliente nuevo (lead)** | Datos en bruto del cliente | Word estructurado para CRM |
-| **Ficha de inmueble** *(la del clímax de clase)* | Folder con fotos + docs | Word editable + PDF compartible brandeado |
+| **Ficha de inmueble brandeada** ⭐ *(ejemplo flagship del meta-agente en clase — texto y presentación primero, fotos al final)* | Carpeta con fotos del inmueble + Word con características | Word editable con tu logo + datos de contacto, listo para revisar y compartir |
 | **Planning semanal** | Citas + pendientes | Word con organización + checklist diario |
 | **Checklist pre-visita** | Inmueble + cliente | Word con qué preguntar, qué revisar, qué llevar |
 | **Resumen semanal de pipeline** | Lista de clientes activos + estado | Word con dashboard del pipeline + acciones recomendadas |
