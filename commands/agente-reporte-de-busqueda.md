@@ -240,9 +240,11 @@ Para cada portal en config:
 3. Aplica filtros del portal (zona, tipo, dorm, precio).
 4. Espera 3-5s y lee resultados.
 
-> **🚨 IMPORTANTE — Ver sección "Quirks técnicos" abajo antes de tomar screenshots o intentar leer URLs.**
+> **🚨 ANTES de tomar screenshots, leer URLs o ejecutar JavaScript, leer la sección "Quirks técnicos" abajo. Especialmente crítico: Quirk 5 (CDP timeout) que aborta el loop infinito en SPAs pesadas como Urbania.**
 
 5. Recolecta candidatos hasta tener **suficientes finalistas que matcheen los `tipos_listings_incluidos` del config** — apunta a 5 finalistas. Si tras revisar muchos candidatos no logras 5 del tipo permitido, entrega los que tengas y avisa al usuario.
+
+**🛑 Regla de aborto del loop:** si ves 2 timeouts consecutivos de `javascript_tool` o `get_page_text` con error `CDP sendCommand "Runtime.evaluate" timed out` o `Page still loading (executeScript waited 45000ms for document_idle)`, **detener intentos de JavaScript** y aplicar Quirk 5 (fallbacks A/B/C en orden). NO seguir reintentando — eso es lo que generó pérdida de 30+ minutos en piloto de clase 2026-05-23.
 
 ### Paso 4 — Detectar tipo de cada listing
 
@@ -371,7 +373,7 @@ Script Python con `python-docx`. Estructura:
 **Una página por inmueble** (5 inmuebles → 5 páginas):
 - Nombre/título del inmueble en grande
 - Dirección
-- **Sin fotos por default.** Las URLs de imágenes vienen scrubeadas por la extensión Claude in Chrome (Quirk 2) y/o lazy-loaded en el card del listado. Si el usuario las pide después con un mensaje como *"agrega fotos al Word"* / *"pon un collage"*, aplicar el flow del **Quirk 5** (fallback con `urllib`) para descargar e insertar collage 2×2 por inmueble. **No intentes fotos en la primera corrida** — entrega rápido y deja que el usuario decida si las quiere.
+- **Sin fotos por default.** Las URLs de imágenes vienen scrubeadas por la extensión Claude in Chrome (Quirk 2) y/o lazy-loaded en el card del listado. Si el usuario las pide después con un mensaje como *"agrega fotos al Word"* / *"pon un collage"*, aplicar el flow del **Quirk 6** (fallback con `urllib`) para descargar e insertar collage 2×2 por inmueble. **No intentes fotos en la primera corrida** — entrega rápido y deja que el usuario decida si las quiere.
 - Tabla con ficha técnica (precio, tipologías, áreas, estado, entrega si aplica, amenities)
 - **"Por qué calza con su búsqueda:"** (bullets del paso 8)
 - Descripción **limpia** del paso 7
@@ -497,7 +499,69 @@ Aplicar el mismo patrón para `img.src`, `data-foto`, etc.
 - Si CAPTCHA aparece: detenerse, advertir al usuario, sugerir que resuelva manualmente y reintentar.
 - **NO correr más de 1 reporte por hora** en el mismo portal con la misma sesión.
 
-### Quirk 5 — Fotos de inmuebles: fallback con `urllib` cuando el usuario las solicita
+### Quirk 5 — CDP timeout / renderer "frozen" en SPAs pesadas (CRÍTICO)
+
+**Cuándo aplicar:** después de **2 timeouts consecutivos** de `javascript_tool` o `get_page_text` con el error característico `CDP sendCommand "Runtime.evaluate" timed out after 45000ms` o `Page still loading (executeScript waited 45000ms for document_idle)`. **NO seguir intentando JavaScript** — eso es lo que causa el loop infinito.
+
+**Síntoma:**
+```
+Failed to execute JavaScript: CDP sendCommand "Runtime.evaluate" timed out after 45000ms
+on tab XXXXX. The renderer may be frozen or unresponsive.
+```
+o
+```
+Failed to extract page text: Page still loading (executeScript waited 45000ms for document_idle).
+```
+
+**Causa:** los portales del stack Navent (Urbania, ZonaProp, Inmuebles24, etc.) son SPAs muy pesadas con anuncios + tracking + chat widgets + lazy loading que mantienen conexiones de red abiertas indefinidamente. El estado `document_idle` que espera la extensión Claude in Chrome **nunca se alcanza**. Cada intento de JavaScript hace timeout en 45 segundos. Tres intentos = 2 minutos perdidos. Diez intentos = 7-8 minutos perdidos sin progreso.
+
+**Reglas de cuándo abortar el loop:**
+
+1. **PRIMER timeout de javascript_tool o get_page_text** → esperar 5s con `computer wait` y reintentar UNA vez.
+2. **SEGUNDO timeout consecutivo** → **DETENER** los intentos de JavaScript. Aplicar fallback A.
+3. **TERCER timeout consecutivo** (si fallback A también falla) → aplicar fallback B.
+4. **CUARTO timeout consecutivo** → abortar y advertir al usuario (fallback C).
+
+**Fallback A — usar `read_page` (más resiliente que JavaScript):**
+
+`read_page` con `filter: "interactive"` extrae el árbol de accesibilidad sin esperar `document_idle`. Es la primera línea de defensa.
+
+```
+read_page({ tabId, filter: "interactive", depth: 20 })
+```
+
+Si esto funciona, extraer las URLs y datos de los listings desde el árbol de accesibilidad en lugar de del DOM vía JS.
+
+**Fallback B — ir directo a URLs de detalle (saltar el listado):**
+
+El listado de Urbania es donde se acumulan los scripts pesados. Las páginas de detalle (`urbania.pe/inmueble/{id}-...`) son HTML mucho más liviano y se cargan sin problemas. Estrategia:
+
+1. Construir URLs de listado paramétricas para que el servidor responda con HTML estático (`?moneda-id=USD&precio-hasta=200000&dormitorios-desde=3&estacionamientos-desde=1`).
+2. Si aún así el listado no carga JS, **adivinar IDs de listings recientes** desde tu memoria de learnings (los IDs son secuenciales: ID hoy es ~150M; el lunes pasado era ~149M).
+3. Navegar directo a 8-10 URLs de detalle, una por una. Cada `navigate` es de sub-segundo en página estática.
+
+**Fallback C — abortar con instrucciones claras al usuario:**
+
+Si los tres fallbacks anteriores fallan, detener y reportar:
+
+> *"⚠ Urbania está respondiendo con timeouts persistentes — la página no termina de cargar JavaScript en mi extensión. Esto suele pasar en horarios de alta demanda o con muchas tabs/extensiones de Chrome abiertas.*
+>
+> *Para resolver:*
+> *1. Cerrar todas las otras tabs de Chrome (especialmente WhatsApp Web, Gmail, dashboards).*
+> *2. Cerrar extensiones que no sean Claude in Chrome (ad-blockers especialmente).*
+> *3. Reiniciar Chrome completamente.*
+> *4. Esperar a que Urbania cargue manualmente en una tab, scrollear hasta ver listings, y solo entonces invocarme de nuevo.*
+>
+> *Tiempo perdido en este intento: {{N}} minutos. No vamos a recuperar más esperando.*
+> *Si quieres, también puedo cambiar a buscar en otro portal del país ({{alternativa}})."*
+
+**NO repetir indefinidamente.** El alumno prefiere un "no puedo ahora" claro en 5 minutos que un "voy a intentar de nuevo" después de 30 minutos.
+
+**Aplicabilidad:** este quirk se aplica a TODOS los portales del stack Navent. Para portales no-Navent (Metrocuadrado, PortalInmobiliario, InfoCasas, Idealista, Encuentra24) el comportamiento puede ser distinto — registrar como learning si los timeouts aparecen.
+
+**Validado en piloto de clase 2026-05-23**: el agente se quedó 30+ minutos en loop por no tener este quirk documentado.
+
+### Quirk 6 — Fotos de inmuebles: fallback con `urllib` cuando el usuario las solicita
 
 **Cuándo aplicar:** SOLO cuando el usuario explícitamente pide fotos después de recibir el Word inicial (mensajes tipo *"agrega fotos al Word"*, *"pon un collage"*, *"el word quedó sin imágenes"*). **NO aplicar en la primera corrida.**
 
@@ -589,9 +653,10 @@ Una vez recolectados los 5 finalistas, los pasos 6-8 (extracción + limpieza + b
 
 ## Versión y mantenimiento
 
-- v0.5 — 2026-05-22 (post-piloto sesión `99f4bcdc`): agregado **Quirk 5 — Fotos de inmuebles** documentando el fallback `urllib` + char-code bypass + regex sobre Navent CDN. Paso 9 modificado: fotos quedan **on-demand**, no por default (entrega rápida primero, collage 2×2 cuando el usuario lo pide). Caso real probado: Urbania → 20 fotos descargadas en ~30s, Word 770KB con 5 collages.
+- v0.6 — 2026-05-23 (post-piloto de clase `076d867f`): agregado **Quirk 5 — CDP timeout / renderer "frozen"** documentando el fallo crítico que generó 30+ min de loop infinito en clase. El antiguo Quirk 5 (fotos urllib) ahora es Quirk 6. Paso 3 reforzado con regla de aborto del loop tras 2 timeouts consecutivos. Tres fallbacks documentados en orden: read_page (A), navegación directa a páginas de detalle (B), abortar con instrucciones al usuario (C). Causa raíz: Urbania como SPA pesada nunca alcanza `document_idle`, cada JS hace timeout en 45s. Sin este quirk, el agente repetía indefinidamente.
+- v0.5 — 2026-05-22 (post-piloto sesión `99f4bcdc`): agregado **Quirk 6 — Fotos de inmuebles** (originalmente Quirk 5, renumerado en v0.6) documentando el fallback `urllib` + char-code bypass + regex sobre Navent CDN. Paso 9 modificado: fotos quedan **on-demand**, no por default. Caso real probado: Urbania → 20 fotos descargadas en ~30s, Word 770KB con 5 collages.
 - v0.4 — 2026-05-10: agregadas 6 reglas críticas canónicas al inicio del .md (una pregunta por turno, wizard mínimo, sin referencias al "curso", sin insights espontáneos, no especular sobre origen, estilo canónico al grano). Atomizada la pregunta 3 (datos profesionales) en 3 + 3b. Saludo inicial acortado. Eliminadas referencias a "alumno"→"usuario".
 - v0.3 — 2026-05-09 (post-piloto): agregada pregunta 6 del wizard sobre tipos de listings, sección de Quirks técnicos, modos diferenciados anti-salto, "Por qué calza" formalizado.
 - v0.2 — 2026-05-09: migrado de sub-agent `.md` a slash command.
 - v0.1 — 2026-05-09: diseño inicial.
-- Última verificación de viabilidad técnica: piloto sesión `99f4bcdc` — Quirk 5 validado en producción, outputs profesionales, ~50 min end-to-end con iteración de fotos.
+- Última verificación de viabilidad técnica: piloto de clase `076d867f` — sin Quirk 5 (CDP timeout) el agente entraba en loop infinito. Documentado para próximas corridas.
