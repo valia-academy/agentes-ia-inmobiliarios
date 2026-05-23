@@ -10,6 +10,10 @@
 
 ## 🚀 Instalación en 1 minuto
 
+> **¿Por qué Claude Desktop?**
+> Los agentes se ejecutan en **Claude Desktop**, la aplicación oficial de Anthropic (Mac/Windows). Las versiones recientes (v2025+) incluyen **Claude Code integrado** — el motor que permite que los agentes lean archivos, naveguen tu Chrome con sesión iniciada y generen Word/Excel reales. No necesitas saber programar ni abrir terminal: todo pasa dentro de la conversación.
+> Si todavía no lo tienes: [claude.com/download](https://claude.com/download).
+
 Si tienes **Claude Pro + Claude Desktop + Chrome con extensión Claude in Chrome**, copia esta frase exacta y pégala en Claude Desktop:
 
 ```
@@ -81,7 +85,7 @@ Brokers individuales, agentes en inmobiliaria, dueños de inmobiliarias medianas
 | Pre-requisito | Por qué | Costo | Link |
 |---------------|---------|-------|------|
 | **Cuenta Claude Pro** | Motor de los agentes | ~USD 20/mes | [claude.ai/upgrade](https://claude.ai/upgrade) |
-| **Claude Desktop** | Donde se ejecutan los slash commands | Incluido en Pro | [claude.com/claude-code](https://claude.com/claude-code) |
+| **Claude Desktop** (v2025+) | Donde se ejecutan los slash commands. Trae Claude Code integrado de fábrica. | Incluido en Pro | [claude.com/download](https://claude.com/download) |
 | **Chrome + extensión Claude in Chrome** | Para que los agentes naveguen portales y servicios web con tu sesión | Incluido en Pro | [Chrome Web Store](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) |
 
 **Pre-requisitos opcionales** según uso:
