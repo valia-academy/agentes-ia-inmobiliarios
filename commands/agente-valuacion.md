@@ -244,9 +244,10 @@ Para cada URL aportada por el usuario:
 
 1. Navega a la URL con `navigate`.
 2. Espera 2-3 segundos para que cargue.
-3. **NO uses screenshots** (Quirk 1: timeouts en portales pesados). Usa `read_page` + `javascript_tool`.
+3. **NO uses screenshots** (Quirk 1: timeouts en portales pesados). Prefiere `read_page(filter: "interactive")` sobre `javascript_tool` — es más resiliente cuando la página no alcanza `document_idle`.
 4. **Para extraer URLs de imágenes y atributos con tokens**, aplica Quirk 2 (char code bypass — ver sección "Quirks técnicos" abajo).
-5. Extrae ficha estructurada:
+5. **🛑 Si ves 2 timeouts consecutivos** con error `CDP sendCommand "Runtime.evaluate" timed out` o `Page still loading (executeScript waited 45000ms for document_idle)` en una URL, **abortar JavaScript en esa URL** y aplicar Quirk 5 (fallbacks A→B→C). NO seguir reintentando — eso es lo que generó loops de 30+ min en pilotos previos.
+6. Extrae ficha estructurada:
 
 ```json
 {
@@ -282,7 +283,7 @@ Usando los portales del config:
 2. Recolecta 5 candidatos relevantes.
 3. Extrae ficha estructurada igual que en paso 4.
 
-Aplica los 4 quirks de Claude in Chrome (ver sección abajo) proactivamente.
+Aplica los 5 quirks de Claude in Chrome (ver sección abajo) proactivamente — especialmente el Quirk 5 (CDP timeout) que aborta el loop infinito en SPAs pesadas.
 
 ### Paso 6 — Normalizar y calcular precio/m²
 
@@ -515,6 +516,59 @@ Buscar strings en español primero (`"Buscar"`, `"Filtrar"`, `"Precio"`, `"Dormi
 - Si CAPTCHA aparece, detenerse y avisar al usuario.
 - **NO más de 1 valuación por hora** en el mismo portal con la misma sesión.
 
+### Quirk 5 — CDP timeout / renderer "frozen" en SPAs pesadas (CRÍTICO)
+
+**Cuándo aplicar:** después de **2 timeouts consecutivos** de `javascript_tool` o `get_page_text` con el error característico `CDP sendCommand "Runtime.evaluate" timed out after 45000ms` o `Page still loading (executeScript waited 45000ms for document_idle)`. **NO seguir intentando JavaScript** — eso es lo que causa el loop infinito.
+
+**Síntoma:**
+```
+Failed to execute JavaScript: CDP sendCommand "Runtime.evaluate" timed out after 45000ms
+on tab XXXXX. The renderer may be frozen or unresponsive.
+```
+o
+```
+Failed to extract page text: Page still loading (executeScript waited 45000ms for document_idle).
+```
+
+**Causa:** los portales del stack Navent (Urbania, ZonaProp, Inmuebles24, ImovelWeb, Plusvalía, AdondeVivir) son SPAs muy pesadas con anuncios + tracking + chat widgets + lazy loading que mantienen conexiones de red abiertas indefinidamente. El estado `document_idle` que espera la extensión Claude in Chrome **nunca se alcanza**. Cada intento de JavaScript hace timeout en 45 segundos. Tres intentos = 2 minutos perdidos. Diez intentos = 7-8 minutos perdidos sin progreso.
+
+**Riesgo específico para valuación:** el agente debe extraer ficha estructurada de 3 URLs aportadas + buscar 5 comparables adicionales = potencialmente 8 navegaciones. Si cada una entra en loop CDP, el demo puede tomar más de 30 minutos sin entregar nada. **Aplicar este quirk al primer indicio de timeout, no esperar a acumular varios.**
+
+**Reglas de cuándo abortar el loop:**
+
+1. **PRIMER timeout de javascript_tool o get_page_text** → esperar 5s con `computer wait` y reintentar UNA vez.
+2. **SEGUNDO timeout consecutivo** → **DETENER** los intentos de JavaScript en esa URL. Aplicar fallback A.
+3. **TERCER timeout consecutivo** (si fallback A también falla) → aplicar fallback B.
+4. **CUARTO timeout consecutivo** → abortar la URL específica, marcar como "extracción fallida" en el ACM, y continuar con las siguientes URLs (no abortar toda la valuación por una sola URL problemática).
+
+**Fallback A — usar `read_page` (más resiliente que JavaScript):**
+
+`read_page` con `filter: "interactive"` extrae el árbol de accesibilidad sin esperar `document_idle`. Es la primera línea de defensa.
+
+```
+read_page({ tabId, filter: "interactive", depth: 20 })
+```
+
+Si esto funciona, extraer ficha del inmueble (precio, m², dorm, baños, antigüedad, ubicación) desde el árbol de accesibilidad en lugar de del DOM vía JS.
+
+**Fallback B — pedir al usuario que pase URLs alternativas:**
+
+Para el agente de valuación, esto es preferible al fallback B del agente de reporte (que sugiere ir a páginas de detalle). Razón: el usuario YA aportó URLs específicas — si una de ellas está rota, lo más eficiente es pedirle reemplazo:
+
+> *"La URL {{url_problemática}} de {{portal}} no termina de cargar — la página queda en estado de carga indefinida y no puedo extraer la ficha. Tengo {{N}} URLs procesadas correctamente. ¿Quieres pasarme otra URL como reemplazo o sigo con las que tengo?"*
+
+**Fallback C — abortar la valuación con ACM parcial:**
+
+Si tres URLs consecutivas fallan o si la búsqueda de comparables adicionales no produce resultados extraíbles:
+
+> *"⚠ El portal {{portal}} está respondiendo con timeouts persistentes en este momento. Logré extraer {{N}} comparables ({{N_aportados}} de los que pasaste + {{N_buscados}} que encontré). Si son al menos 4, puedo generar un ACM con esa muestra reducida — el rango va a ser menos confiable pero entregable. Si son menos de 4, te recomiendo intentar en otro horario o cambiar al portal {{alternativa}}."*
+
+**NO repetir indefinidamente.** El usuario prefiere un ACM con 4 comparables ahora que un ACM con 8 dentro de 40 minutos.
+
+**Aplicabilidad:** este quirk se aplica a TODOS los portales del stack Navent. Para portales no-Navent (Metrocuadrado, PortalInmobiliario, InfoCasas, Idealista, Encuentra24) el comportamiento puede ser distinto — registrar como learning si los timeouts aparecen.
+
+**Validado en piloto de clase 2026-05-23 del agente reporte** (mismo problema). Documentado preventivamente para valuación porque comparte la misma infraestructura.
+
 ---
 
 ## Notas técnicas (no se muestran al usuario)
@@ -545,4 +599,5 @@ Una vez confirmadas las URLs del usuario y las recomendadas, la extracción de l
 
 ## Versión
 
+- v0.2 — 2026-05-23 (post-piloto del agente-reporte-de-busqueda `076d867f`): agregado **Quirk 5 — CDP timeout / renderer "frozen"** documentando el fallo crítico observado en el agente hermano que también afecta a este. El agente de valuación es vulnerable al mismo loop porque navega los mismos portales Navent para extraer fichas de comparables y buscar comparables adicionales. Paso 4 reforzado con regla de aborto del loop tras 2 timeouts consecutivos en una URL. Tres fallbacks documentados: read_page (A), pedir URL alternativa al usuario (B), abortar URL específica y entregar ACM parcial (C). Sin este quirk, una sola URL problemática del usuario podría romper toda la valuación.
 - v0.1 — 2026-05-10 (diseño inicial post-decisión de simplificar): agente unificado de ACM sin opción Valia Pro. Funciona en cualquier país y tipo de inmueble. 6 reglas críticas canónicas. 4 quirks Chrome. Wizard mínimo 1 pregunta + lazy config para datos del profesional. Outputs Word + Excel con fórmulas reales.

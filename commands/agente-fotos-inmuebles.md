@@ -534,6 +534,48 @@ Ya cubierto en Quirk E de arriba.
 
 ChatGPT Plus tiene límites de generación de imágenes por hora/día. Si aparece rate limit, surface al usuario el tiempo y ofrecer continuar con Pillow para las restantes.
 
+### Quirk 5 — CDP timeout / renderer "frozen" en chatgpt.com (CRÍTICO)
+
+**Cuándo aplicar:** después de **2 timeouts consecutivos** de `javascript_tool`, `get_page_text` o acciones de `computer` con el error característico `CDP sendCommand "Runtime.evaluate" timed out after 45000ms` o `Page still loading (executeScript waited 45000ms for document_idle)`. **NO seguir intentando** — eso causa el loop infinito documentado en pilotos previos del set.
+
+**Síntoma:**
+```
+Failed to execute JavaScript: CDP sendCommand "Runtime.evaluate" timed out after 45000ms
+on tab XXXXX. The renderer may be frozen or unresponsive.
+```
+
+**Causa:** chatgpt.com es una SPA pesada que mantiene conexiones de red abiertas (streaming de tokens, websockets, polling). El estado `document_idle` que espera la extensión Claude in Chrome **puede no alcanzarse** durante generación de imágenes o cuando el usuario tiene varias tabs abiertas. Cada intento hace timeout en 45 segundos.
+
+**Reglas de cuándo abortar el loop:**
+
+1. **PRIMER timeout** → esperar 5s con `computer wait` y reintentar UNA vez.
+2. **SEGUNDO timeout consecutivo** → **DETENER**. Aplicar fallback A.
+3. **TERCER timeout consecutivo** → fallback B (cambiar a Pillow para foto actual y siguientes).
+4. **CUARTO timeout consecutivo** → abortar la corrida con GPT Image 2 y completar con Pillow.
+
+**Fallback A — reload de la tab + reintento:**
+
+```
+navigate({ url: "https://chatgpt.com", tabId })
+computer({ action: "wait", duration: 5, tabId })
+```
+
+Reloadear chatgpt.com fuerza un reset del estado de la tab. Suele resolver el problema sin perder la sesión iniciada.
+
+**Fallback B — degradar a Pillow para fotos restantes:**
+
+Si después del reload los timeouts persisten en la siguiente foto, **dejar de intentar GPT Image 2** y completar las fotos restantes con Pillow local (que no depende de Chrome):
+
+> *"⚠ ChatGPT está respondiendo con timeouts persistentes en este momento. Procesé {{N}} fotos con GPT Image 2 y voy a completar las {{N_restantes}} con Pillow local (correcciones básicas, sin IA generativa). Las que ya están con GPT Image 2 quedan tal cual. ¿OK?"*
+
+**Fallback C — abortar y notificar:**
+
+Si Pillow también está fallando (improbable, pero posible si el problema es del sistema completo), abortar con instrucciones claras al usuario para reiniciar Chrome y reintentar más tarde.
+
+**NO repetir indefinidamente.** El usuario prefiere fotos parciales con calidad mixta que esperar 30+ minutos sin resultado.
+
+**Validado preventivamente** post-piloto del agente reporte (`076d867f`, mayo 23) — el mismo patrón de CDP timeout puede afectar a chatgpt.com en cualquier momento.
+
 ---
 
 ## Notas técnicas (no se muestran al usuario)
@@ -566,5 +608,6 @@ El procesamiento con GPT Image 2 NO es paralelizable fácilmente — ChatGPT lim
 
 ## Versión
 
+- v0.3 — 2026-05-23 (post-piloto del agente-reporte-de-busqueda `076d867f`): agregado **Quirk 5 — CDP timeout / renderer "frozen"** preventivamente. El mismo patrón observado en Urbania (SPA pesada nunca alcanza `document_idle`) puede ocurrir en chatgpt.com durante generación de imágenes o con varias tabs abiertas. Reglas de aborto del loop: 2 timeouts → reload tab; 3 → degradar a Pillow; 4 → abortar GPT Image 2 y completar todo con Pillow. Evita que un fallo de chatgpt.com bloquee el procesamiento completo.
 - v0.2 — 2026-05-22 (post-decisión de simplificar): eliminada toda referencia a Gemini/Nano Banana 2. Solo ChatGPT (GPT Image 2) como modelo de mejora con IA, Pillow como fallback. **Flow completo de ChatGPT vía Claude in Chrome embebido en este `.md`** — el agente es 100% autocontenido, no depende de skills externas. 7 quirks específicos del flow ChatGPT documentados (Share button, URL blocking, PNG output, filename mangling, locale ES, rate limit, content policy).
 - v0.1 — 2026-05-10 (descartada): incluía Gemini Nano Banana 2 + lógica de modelo prioritario.
