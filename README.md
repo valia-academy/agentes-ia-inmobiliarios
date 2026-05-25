@@ -117,12 +117,33 @@ Brokers individuales, agentes en inmobiliaria, dueños de inmobiliarias medianas
 | **Cuenta Claude Pro** | Motor de los agentes | ~USD 20/mes | [claude.ai/upgrade](https://claude.ai/upgrade) |
 | **Claude Desktop** (v2025+) | Donde se ejecutan los slash commands. Trae Claude Code integrado de fábrica. | Incluido en Pro | [claude.com/download](https://claude.com/download) |
 | **Chrome + extensión Claude in Chrome** | Para que los agentes naveguen portales y servicios web con tu sesión | Incluido en Pro | [Chrome Web Store](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) |
+| **Python 3.10+** | 5 de los 6 agentes lo usan para generar Word, Excel y PDF reales (`python-docx`, `openpyxl`, `pdfplumber`, `Pillow`). En Mac suele venir preinstalado. En Windows hay que instalarlo desde Microsoft Store (1 clic, gratis) o [python.org](https://www.python.org/downloads/). | Gratis | [Cómo verificar abajo](#-verificar-python) |
 
 **Pre-requisitos opcionales** según uso:
 
 | Para qué agente | Cuenta requerida | Modo sin la cuenta |
 |-----------------|------------------|--------------------|
 | `/agente-fotos-inmuebles` con mejora IA | ChatGPT Plus o Pro (GPT Image 2) | Fallback automático a Pillow local (correcciones básicas) |
+
+### 🐍 Verificar Python
+
+**Mac (Terminal):**
+```bash
+python3 --version
+```
+Si responde con `Python 3.10` o superior, ya lo tienes. Si dice *"command not found"* → instalá con `brew install python` o desde [python.org](https://www.python.org/downloads/).
+
+**Windows (PowerShell):**
+```powershell
+python --version
+```
+Si responde con `Python 3.10` o superior, ya lo tienes. Si no:
+1. Abrí **Microsoft Store**.
+2. Buscá *"Python 3.12"* (o la versión más reciente disponible).
+3. Click **"Obtener"** — gratis, 1 minuto, configura el PATH solo.
+4. Reabrí PowerShell y volvé a verificar.
+
+> **Si te aparece error de Python al invocar un agente**: respondéle a Claude *"Verifica que tengo Python instalado con `python --version` o `python3 --version`. Si no lo tengo, dame instrucciones de cómo instalarlo en mi sistema."* — Claude detecta el OS y te guía.
 
 ---
 

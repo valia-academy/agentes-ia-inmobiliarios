@@ -86,9 +86,26 @@ Saluda corto:
    ```
 
 2. Verifica/instala dependencias silenciosamente:
-   ```bash
-   python -c "import PIL, pillow_heif" 2>/dev/null || pip install Pillow pillow-heif
-   ```
+**Verificación de Python con mensaje amigable si falta:**
+
+NO ejecutes el snippet de `pip install` a ciegas — primero verifica que Python esté instalado. Si no lo está, muestra al usuario el mensaje de abajo y DETENTE — no intentes `pip install` (también va a fallar). El usuario tiene que instalar Python antes de continuar.
+
+```bash
+# Detectar Python primero — soporta `python`, `python3`, `py` (Windows)
+if command -v python >/dev/null 2>&1; then PY=python; elif command -v python3 >/dev/null 2>&1; then PY=python3; elif command -v py >/dev/null 2>&1; then PY=py; else echo "PYTHON_NOT_INSTALLED"; exit 1; fi
+$PY -c "import PIL, pillow_heif" 2>/dev/null || $PY -m pip install Pillow pillow-heif
+```
+
+**Si el comando devuelve `PYTHON_NOT_INSTALLED`** (o si en Windows ves "python is not recognized"), muestra este mensaje exacto al usuario y aborta:
+
+> *"⚠ Python no está instalado en tu sistema. Sin Python no puedo generar el Word/Excel/PDF de salida. Para instalarlo:*
+>
+> *• **Windows**: abre Microsoft Store, busca \"Python 3.12\", click \"Obtener\" (gratis, ~1 minuto). Configura el PATH solo.*
+> *• **Mac**: en Terminal ejecuta `brew install python` (si tienes Homebrew) o descarga el instalador de python.org/downloads.*
+>
+> *Después de instalar, cierra Claude Desktop completamente y vuelve a abrirlo (sino no detecta el nuevo PATH). Invócame de nuevo y seguimos."*
+
+**NO continúes con la tarea.** El agente requiere Python — sin él, no hay output.
 
 3. Guarda config:
    ```json
