@@ -1,7 +1,7 @@
 # Agentes de IA Inmobiliarios
 
-> **6 agentes de IA auto-instalables para profesionales inmobiliarios** en LATAM y España.
-> Reporte de búsqueda con anti-salto · Análisis legal de contratos · Valuación ACM · Procesamiento de fotos con IA · Meta-agente que construye más agentes.
+> **7 agentes de IA auto-instalables para profesionales inmobiliarios** en LATAM y España.
+> Reporte de búsqueda con anti-salto · Análisis legal de contratos · Valuación ACM · Valuación de terrenos por método residual · Procesamiento de fotos con IA · Meta-agente que construye más agentes.
 > Open source — uso individual gratuito. Hecho por [Valia Academy](https://github.com/valia-academy).
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
@@ -29,7 +29,7 @@ Invoke-WebRequest; en Mac usa curl. Ambos vienen preinstalados.
 ```
 
 Claude hace el resto:
-1. Descarga los 6 archivos `.md` del repo vía HTTP directo (sin git).
+1. Descarga los 7 archivos `.md` del repo vía HTTP directo (sin git).
 2. Los guarda en `~/.claude/commands/`.
 3. Te confirma que están listos.
 
@@ -61,6 +61,7 @@ mkdir -p ~/.claude/commands
 BASE="https://raw.githubusercontent.com/valia-academy/agentes-ia-inmobiliarios/main/commands"
 for f in agente-hola-inmobiliaria.md agente-reporte-de-busqueda.md \
          agente-legal-inmobiliario.md agente-valuacion.md \
+         agente-valuador-terreno-urbano.md \
          agente-fotos-inmuebles.md agente-constructor-de-agentes.md; do
   curl -fsSL "$BASE/$f" -o ~/.claude/commands/"$f"
 done
@@ -74,6 +75,7 @@ New-Item -ItemType Directory -Force -Path $dest | Out-Null
 $base = "https://raw.githubusercontent.com/valia-academy/agentes-ia-inmobiliarios/main/commands"
 $files = @("agente-hola-inmobiliaria.md", "agente-reporte-de-busqueda.md",
            "agente-legal-inmobiliario.md", "agente-valuacion.md",
+           "agente-valuador-terreno-urbano.md",
            "agente-fotos-inmuebles.md", "agente-constructor-de-agentes.md")
 foreach ($f in $files) {
   Invoke-WebRequest -Uri "$base/$f" -OutFile "$dest\$f" -UseBasicParsing
@@ -97,7 +99,7 @@ Brokers individuales, agentes en inmobiliaria, dueños de inmobiliarias medianas
 
 ---
 
-## 🤖 Los 6 agentes
+## 🤖 Los 7 agentes
 
 | Comando | Qué hace | Etapa del funnel |
 |---------|----------|------------------|
@@ -105,6 +107,7 @@ Brokers individuales, agentes en inmobiliaria, dueños de inmobiliarias medianas
 | `/agente-reporte-de-busqueda` | De unas líneas con criterios del cliente comprador, genera Word brandeado con la selección de inmuebles que matchean + Excel checklist anti-salto. Navega portales del país con tu sesión de Chrome. | Pre-venta / captación |
 | `/agente-legal-inmobiliario` | Redacta, analiza y consulta sobre contratos inmobiliarios en tu jurisdicción. 3 modos auto-detectados (redactor / analista / consultor). Multimodal (PDF, Word, MD, TXT, imágenes). Auto-genera knowledge legal país-específico. | Cierre |
 | `/agente-valuacion` | De ficha del inmueble + URLs de comparables, genera Word brandeado con valuación (ACM) + Excel ajustable con fórmulas reales. | Valuación |
+| `/agente-valuador-terreno-urbano` | Valúa un **terreno** por su potencial de desarrollo (método residual): infiere o recibe la edificabilidad, releva precios de estreno de la zona y genera Word + Excel + PDF con 3 escenarios, sensibilidad y metodología trazable. Se adapta a la normativa y portales de cada país. | Valuación / desarrollo |
 | `/agente-fotos-inmuebles` | Procesa carpeta caótica de fotos: selecciona finalistas, renombra según estándar inmobiliario, mejora con GPT Image 2 (ChatGPT Plus/Pro). | Operación / listing |
 | `/agente-constructor-de-agentes` | **Meta-agente.** De una idea (vaga o concreta) sobre qué automatizar, te conduce conversacionalmente por el diseño y te deja un nuevo agente instalado y listo. | Multiplicador transversal |
 
@@ -117,7 +120,7 @@ Brokers individuales, agentes en inmobiliaria, dueños de inmobiliarias medianas
 | **Cuenta Claude Pro** | Motor de los agentes | ~USD 20/mes | [claude.ai/upgrade](https://claude.ai/upgrade) |
 | **Claude Desktop** (v2025+) | Donde se ejecutan los slash commands. Trae Claude Code integrado de fábrica. | Incluido en Pro | [claude.com/download](https://claude.com/download) |
 | **Chrome + extensión Claude in Chrome** | Para que los agentes naveguen portales y servicios web con tu sesión | Incluido en Pro | [Chrome Web Store](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) |
-| **Python 3.10+** | 5 de los 6 agentes lo usan para generar Word, Excel y PDF reales (`python-docx`, `openpyxl`, `pdfplumber`, `Pillow`). En Mac suele venir preinstalado. En Windows hay que instalarlo desde Microsoft Store (1 clic, gratis) o [python.org](https://www.python.org/downloads/). | Gratis | [Cómo verificar abajo](#-verificar-python) |
+| **Python 3.10+** | 6 de los 7 agentes lo usan para generar Word, Excel y PDF reales (`python-docx`, `openpyxl`, `pdfplumber`, `Pillow`). En Mac suele venir preinstalado. En Windows hay que instalarlo desde Microsoft Store (1 clic, gratis) o [python.org](https://www.python.org/downloads/). | Gratis | [Cómo verificar abajo](#-verificar-python) |
 
 **Pre-requisitos opcionales** según uso:
 
@@ -166,6 +169,11 @@ o San Isidro, USD 250-300k, con cochera. Tiene mascota.
 ```
 
 ```
+/agente-valuador-terreno-urbano Valúa el terreno de Av. Arequipa 1110,
+Lima, Perú. 1,204.45 m², esquinero.
+```
+
+```
 /agente-fotos-inmuebles Procesa fotos en ~/Downloads/larco-850/
 ```
 
@@ -188,11 +196,12 @@ primero, fotos al final.
 agentes-ia-inmobiliarios/
 ├── README.md                    ← estás aquí
 ├── LICENSE                      ← CC BY-NC 4.0
-├── commands/                    ← los 6 agentes (.md de slash commands)
+├── commands/                    ← los 7 agentes (.md de slash commands)
 │   ├── agente-hola-inmobiliaria.md
 │   ├── agente-reporte-de-busqueda.md
 │   ├── agente-legal-inmobiliario.md
 │   ├── agente-valuacion.md
+│   ├── agente-valuador-terreno-urbano.md
 │   ├── agente-fotos-inmuebles.md
 │   └── agente-constructor-de-agentes.md
 ├── docs/
@@ -258,9 +267,9 @@ Para licencia comercial (uso en empresas inmobiliarias, integración en SaaS, re
 
 ## 🔄 Versión
 
-**v0.5** · Diseño curricular cerrado · 6 agentes en versión beta.
+**v0.6** · 7 agentes en versión beta.
 
-Última actualización: 2026-05-22.
+Última actualización: 2026-06-09.
 
 ---
 
